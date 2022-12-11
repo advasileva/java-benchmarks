@@ -1,11 +1,9 @@
 package org.benchmark;
 
-import org.cactoos.func.FuncOf;
 import org.cactoos.iterable.Repeated;
 import org.cactoos.iterable.Mapped;
 import org.cactoos.number.SumOf;
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.stream.Stream;

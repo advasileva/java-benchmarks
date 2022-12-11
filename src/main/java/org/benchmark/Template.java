@@ -5,8 +5,8 @@ import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Warmup;
 
-@BenchmarkMode(Mode.Throughput)
+@BenchmarkMode(Mode.AverageTime)
 @Warmup(iterations = 1)
-@Measurement(iterations = 2)
+@Measurement(iterations = 4)
 public abstract class Template {
 }
