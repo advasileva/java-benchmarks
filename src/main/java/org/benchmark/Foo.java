@@ -1,6 +1,7 @@
-package org.sample;
+package org.benchmark;
 
 public class Foo {
-    public void hello() {
+    public int bar() {
+        return 1;
     }
 }

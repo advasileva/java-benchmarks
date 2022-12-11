@@ -1,20 +1,21 @@
-package org.sample;
+package org.benchmark;
 
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
-public class Instantiation {
+public class Instantiation extends Template {
     @Benchmark
-    public void measureWithInstantiation(org.openjdk.jmh.infra.Blackhole bh) {
-        for (int i = 0; i < 100000; i++) {
-            new Foo().hello();
+    public void measureWith(Blackhole bh) {
+        for (int i = 0; i < 1000000; i++) {
+            bh.consume(new Foo().bar());
         }
     }
 
     @Benchmark
-    public void measureWithoutInstantiation(org.openjdk.jmh.infra.Blackhole bh) {
+    public void measureWithout(Blackhole bh) {
         Foo foo = new Foo();
-        for (int i = 0; i < 100000; i++) {
-            foo.hello();
+        for (int i = 0; i < 1000000; i++) {
+            bh.consume(foo.bar());
         }
     }
 }
