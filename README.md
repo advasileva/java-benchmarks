@@ -7,6 +7,9 @@ The [JMH](https://github.com/openjdk/jmh) tool was used with settings for each b
 + Warmup Iterations = 5;
 + Measurement Iterations = 5;
 
+
+
+
 ## Instantiation
 
 **Task**: Call a method many times that does not modify the object.
@@ -42,6 +45,9 @@ Benchmark | Mode | Cnt | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
 `Instantiation.measureWith` | thrpt | 5 | 35479,436 | ± 3843,144 | ops/s
 `Instantiation.measureWithout` | thrpt | 5 | 36249,932 | ± 711,607 | ops/s
+
+
+
 
 ## Collections
 
@@ -104,3 +110,44 @@ Benchmark | Mode | Cnt | Score | Error | Units
 `Collections.measureProcedural` | thrpt | 25 | 30488,728 | ± 1379,901 | ops/s
 `Collections.measureFunctional` | thrpt | 25 | 18794,544 | ± 466,739 | ops/s
 `Collections.measureDeclarative` | thrpt | 25 | 2412,086 | ± 180,319 | ops/s
+
+
+
+## Polymorphism
+
+**Task**: Call a polymorphic method many times.
+
+**Question**: How does Java Dynamic Dispatch affect performance?
+
+### Implementations
+
+Late binding polymorphism using Dynamic Dispatch (there is probably a JIP optimization here):
+
+```Java
+public void measureWith(Blackhole bh) {
+    Cart c = new Cart(new Book("1984"));
+    c.p = new Movie("Godfather");
+    for (int i = 0; i < 1000000000; i++) {
+        bh.consume(c.total());
+    }
+}
+```
+
+Reducing polymorphism before compilation using object specialization:
+
+```Java
+public void measureWithout(Blackhole bh) {
+    Cart1 c1 = new Cart1(new Book("1984"));
+    Cart2 c2 = c1.with(new Movie("Godfather"));
+    for (int i = 0; i < 1000000000; i++) {
+        bh.consume(c2.total());
+    }
+}
+```
+
+### Results
+
+Benchmark | Mode | Cnt | Score | Error | Units
+------ | ------ | ------ | ------ | ------ | ------
+`Polymorphism.measureWith` | thrpt | 25 | 38,970 | ± 0,366 | ops/s
+`Polymorphism.measureWithout` | thrpt | 25 | 38,985 | ± 0,247 | ops/s
