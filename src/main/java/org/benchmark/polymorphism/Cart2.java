@@ -7,5 +7,5 @@ public class Cart2 {
         this.p = m;
         this.qty = 10;
     }
-    public int total(MockState state) { return p.price(state) * qty; }
+    public int total() { return p.price() * qty; }
 }

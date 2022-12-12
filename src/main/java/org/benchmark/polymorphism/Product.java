@@ -5,5 +5,5 @@ public abstract class Product {
     public Product(String title) {
         this.title = title;
     }
-    public abstract int price(MockState state);
+    public abstract int price();
 }

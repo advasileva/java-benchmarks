@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 public class Collections extends Template {
     @Benchmark
     public void measureProcedural(Blackhole bh) {
-        final Foo[] foos = new Foo[10000];
-        for (int i = 0; i < 10000; i++) {
+        final Foo[] foos = new Foo[100000000];
+        for (int i = 0; i < 100000000; i++) {
             foos[i] = new Foo();
         }
         int sum = 0;
@@ -25,7 +25,7 @@ public class Collections extends Template {
     @Benchmark
     public void measureFunctional(Blackhole bh) {
         int sum = Stream.generate(Foo::new)
-                .limit(10000)
+                .limit(100000000)
                 .map(Foo::bar)
                 .mapToInt(Integer::intValue)
                 .sum();
@@ -38,7 +38,7 @@ public class Collections extends Template {
                 new Mapped<Integer>(
                         foo -> foo.bar(),
                         new Repeated<Foo>(
-                                10000,
+                                100000000,
                                 new Foo()
                         )
                 )

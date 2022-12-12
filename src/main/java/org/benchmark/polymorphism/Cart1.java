@@ -7,7 +7,7 @@ public class Cart1 {
         this.p = b;
         this.qty = 10;
     }
-    public int total(MockState state) { return p.price(state) * 2; }
+    public int total() { return p.price() * 2; }
     public Cart2 with(Movie m) {
         Cart2 c2 = new Cart2(m);
         return c2;
