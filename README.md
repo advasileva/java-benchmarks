@@ -2,11 +2,21 @@
 
 The [JMH](https://github.com/openjdk/jmh) tool was used with settings for each benchmark:
 
-+ Number of Forks = 5;
-+ Benchmark Mode = `Throughput`;
-+ Warmup Iterations = 5;
-+ Measurement Iterations = 5;
++ `Mode = Throughput` - benchmark measurement mode - function performance in operations per second;
++ `Fork = 5` - number of forks of the process with the program;
++ `Warmup = 5` - number of warmup iterations that are not included in the measurement;
++ `Measurement = 5` - number of iterations to count the measurement;
 
+
+The measurement results are presented in the format:
+
+Benchmark | Mode | Iterations | Score | Error | Units
+------ | ------ | ------ | ------ | ------ | ------
+`B` | `M` | `I` | `S` | `E` | `U`
+
+**Total time:** `T`
+
+Where: Benchmark `B` (`className.methodName`) was measured in the `M` mode the number of times `I`. We got the result `S` with the error `E` in units of measurement `U`. The measurement lasted time `T`
 
 
 
@@ -41,12 +51,12 @@ public void measureWithout(Blackhole bh) {
 
 ### Results
 
-Benchmark | Mode | Cnt | Score | Error | Units
+Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Instantiation.measureWith` | thrpt | 5 | 35479,436 | ± 3843,144 | ops/s
-`Instantiation.measureWithout` | thrpt | 5 | 36249,932 | ± 711,607 | ops/s
-
-
+`Instantiation.measureWith` | `Throughput` | 5 | 35479,436 | ± 3843,144 | ops/s 
+`Instantiation.measureWithout` | `Throughput` | 5 | 36249,932 | ± 711,607 | ops/s
+ 
+**Total time:** `T`
 
 
 ## Collections
@@ -105,11 +115,13 @@ public void measureDeclarative(Blackhole bh) {
 
 ### Results
 
-Benchmark | Mode | Cnt | Score | Error | Units
+Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Collections.measureProcedural` | thrpt | 25 | 30488,728 | ± 1379,901 | ops/s
-`Collections.measureFunctional` | thrpt | 25 | 18794,544 | ± 466,739 | ops/s
-`Collections.measureDeclarative` | thrpt | 25 | 2412,086 | ± 180,319 | ops/s
+`Collections.measureProcedural` | `Throughput` | 25 | 30488,728 | ± 1379,901 | ops/s
+`Collections.measureFunctional` | `Throughput` | 25 | 18794,544 | ± 466,739 | ops/s
+`Collections.measureDeclarative` | `Throughput` | 25 | 2412,086 | ± 180,319 | ops/s
+
+**Total time:** `T`
 
 
 
@@ -127,7 +139,7 @@ Late binding polymorphism using Dynamic Dispatch (there is probably a JIP optimi
 public void measureWith(Blackhole bh) {
     Cart c = new Cart(new Book("1984"));
     c.p = new Movie("Godfather");
-    for (int i = 0; i < 1000000000; i++) {
+    for (long i = 0; i < 10000000000L; i++) {
         bh.consume(c.total());
     }
 }
@@ -139,7 +151,7 @@ Reducing polymorphism before compilation using object specialization:
 public void measureWithout(Blackhole bh) {
     Cart1 c1 = new Cart1(new Book("1984"));
     Cart2 c2 = c1.with(new Movie("Godfather"));
-    for (int i = 0; i < 1000000000; i++) {
+    for (long i = 0; i < 10000000000L; i++) {
         bh.consume(c2.total());
     }
 }
@@ -147,7 +159,30 @@ public void measureWithout(Blackhole bh) {
 
 ### Results
 
-Benchmark | Mode | Cnt | Score | Error | Units
+Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Polymorphism.measureWith` | thrpt | 25 | 38,970 | ± 0,366 | ops/s
-`Polymorphism.measureWithout` | thrpt | 25 | 38,985 | ± 0,247 | ops/s
+`Polymorphism.measureWith` | `Throughput` | 25 | 2,254 | ± 0,173 | ops/s
+`Polymorphism.measureWithout` | `Throughput` | 25 | 2,047 | ± 0,058 | ops/s
+
+**Total time:** 18m 51s
+
+### Discussion
+
+One fork with 5 measurable iterations outputs the following results:
+
+```bash
+# Run progress: 20,00% complete, ETA 00:15:10
+# Fork: 3 of 5
+# Warmup Iteration   1: 0,075 ops/s
+# Warmup Iteration   2: 0,075 ops/s
+# Warmup Iteration   3: 2,579 ops/s
+# Warmup Iteration   4: 2,506 ops/s
+# Warmup Iteration   5: 2,579 ops/s
+Iteration   1: 2,502 ops/s
+Iteration   2: 2,556 ops/s
+Iteration   3: 2,561 ops/s
+Iteration   4: 2,479 ops/s
+Iteration   5: 2,329 ops/s
+```
+
+The first two iterations are noticeably slower than the next ones. Therefore, we can assume that JIT optimization works
