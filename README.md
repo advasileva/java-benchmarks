@@ -143,7 +143,7 @@ Late binding polymorphism using Dynamic Dispatch (there is probably a JIP optimi
 public void measureWith(Blackhole bh) {
     Cart c = new Cart(new Book("1984"));
     c.p = new Movie("Godfather");
-    for (long i = 0; i < 10000000000L; i++) {
+    for (long i = 0; i < 10000000L; i++) {
         bh.consume(c.total());
     }
 }
@@ -155,7 +155,7 @@ Reducing polymorphism before compilation using object specialization:
 public void measureWithout(Blackhole bh) {
     Cart1 c1 = new Cart1(new Book("1984"));
     Cart2 c2 = c1.with(new Movie("Godfather"));
-    for (long i = 0; i < 10000000000L; i++) {
+    for (long i = 0; i < 10000000L; i++) {
         bh.consume(c2.total());
     }
 }
@@ -165,10 +165,10 @@ public void measureWithout(Blackhole bh) {
 
 Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Polymorphism.measureWith` | `Throughput` | 25 | 2,254 | ± 0,173 | ops/s
-`Polymorphism.measureWithout` | `Throughput` | 25 | 2,047 | ± 0,058 | ops/s
+`Polymorphism.measureWith` | `Throughput` | 25 | 10,291 | ± 0,053 | ops/s
+`Polymorphism.measureWithout` | `Throughput` | 25 | 10,471 | ± 0,057 | ops/s
 
-**Total time:** 18m 51s
+**Total time:** 16m 54s
 
 ### Discussion
 
