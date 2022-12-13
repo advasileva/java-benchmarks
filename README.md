@@ -18,6 +18,9 @@ Benchmark | Mode | Iterations | Score | Error | Units
 
 Where: Benchmark `B` (`className.methodName`) was measured in the `M` mode the number of times `I`. We got the result `S` with the error `E` in units of measurement `U`. The measurement lasted time `T`
 
+For example, in the first measurement, the throughput of the `Instantiation.measureWith` function is `35479,436 ± 3843,144` operations per second.
+The declared accuracy of the tool is `99.9%`, so with a probability of `0.999`, the actual throughput is in the interval `(35479,436 - 3843,144; 35479,436 + 3843,144)` ops/s. Of course, it depends on a lot of parameters, and other conditions will lead to different results.
+
 
 
 ## Instantiation
@@ -57,6 +60,7 @@ Benchmark | Mode | Iterations | Score | Error | Units
 `Instantiation.measureWithout` | `Throughput` | 5 | 36249,932 | ± 711,607 | ops/s
  
 **Total time:** `T`
+
 
 
 ## Collections
