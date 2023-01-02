@@ -165,7 +165,7 @@ public void measureWithout(Blackhole bh) {
 
 Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Polymorphism.measureWith` | `AverageTime` | 10 | 10,291 | ± 0,053 | s/op
-`Polymorphism.measureWithout` | `AverageTime` | 10 | 10,471 | ± 0,057 | s/op
+`Polymorphism.measureWith` | `AverageTime` | 10 | 8,648 | ± 0,834 | s/op
+`Polymorphism.measureWithout` | `AverageTime` | 10 | 6,360 | ± 0,346 | s/op
 
-**Total time:** 5m 5s
+**Total time:** 5m 18s
