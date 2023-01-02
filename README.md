@@ -4,7 +4,8 @@ The [JMH](https://github.com/openjdk/jmh) tool was used with settings for each b
 
 + `Mode = AverageTime` - benchmark measurement mode - function execution time in seconds per operation;
 + `Fork = 10` - number of forks of the process with the program;
-+ `Measurement = 1` - number of iterations to count the measurement;
++ `Measurement = 1` - number of iterations to count the measurement.
+
 There is a single operation in one fork, so that JIT optimization does not work
 
 
@@ -125,7 +126,7 @@ Benchmark | Mode | Iterations | Score | Error | Units
 `Collections.measureFunctional` | `AverageTime` | 10 | 4,560 | ± 0,595 | s/op
 `Collections.measureDeclarative` | `AverageTime` | 10 | 9,070 | ± 5,783 | s/op
 
-**Total time:** `T`
+**Total time:** 7m 54s
 
 
 
