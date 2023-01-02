@@ -2,10 +2,10 @@
 
 The [JMH](https://github.com/openjdk/jmh) tool was used with settings for each benchmark:
 
-+ `Mode = Throughput` - benchmark measurement mode - function performance in operations per second;
-+ `Fork = 5` - number of forks of the process with the program;
-+ `Warmup = 5` - number of warmup iterations that are not included in the measurement;
-+ `Measurement = 5` - number of iterations to count the measurement;
++ `Mode = AverageTime` - benchmark measurement mode - function execution time in seconds per operation;
++ `Fork = 10` - number of forks of the process with the program;
++ `Measurement = 1` - number of iterations to count the measurement;
+There is a single operation in one fork, so that JIT optimization does not work
 
 
 The measurement results are presented in the format:
@@ -18,8 +18,8 @@ Benchmark | Mode | Iterations | Score | Error | Units
 
 Where: Benchmark `B` (`className.methodName`) was measured in the `M` mode the number of times `I`. We got the result `S` with the error `E` in units of measurement `U`. The measurement lasted time `T`
 
-For example, in the first measurement, the throughput of the `Instantiation.measureWith` function is `35479,436 ± 3843,144` operations per second.
-The declared accuracy of the tool is `99.9%`, so with a probability of `0.999`, the actual throughput is in the interval `(35479,436 - 3843,144; 35479,436 + 3843,144)` ops/s. Of course, it depends on a lot of parameters, and other conditions will lead to different results.
+For example, in the first measurement, the execution time of the `Instantiation.measureWith` function is `3,714 ± 0,246` seconds per operation.
+The declared accuracy of the tool is `99.9%`, so with a probability of `0.999`, the actual execution time is in the interval `(3,714 - 0,246; 3,714 + 0,246)` s/ops. Of course, it depends on a lot of parameters, and other conditions will lead to different results.
 
 
 
@@ -35,18 +35,18 @@ Instantiating a new object for each call:
 
 ```Java
 public void measureWith(Blackhole bh) {
-    for (int i = 0; i < 1000000; i++) {
+    for (long i = 0; i < 100000000L; i++) {
         bh.consume(new Foo().bar());
     }
 }
 ```
 
-Instantiating a single object for all calls:
+Instantiating a single object for all calls (since `this.hashCode()` is called in `bar()`, the call is optimized):
 
 ```Java
 public void measureWithout(Blackhole bh) {
     Foo foo = new Foo();
-    for (int i = 0; i < 1000000; i++) {
+    for (long i = 0; i < 100000000L; i++) {
         bh.consume(foo.bar());
     }
 }
@@ -55,11 +55,11 @@ public void measureWithout(Blackhole bh) {
 ### Results
 
 Benchmark | Mode | Iterations | Score | Error | Units
------- | ------ | ------ | ------ | ------ | ------
-`Instantiation.measureWith` | `Throughput` | 5 | 35479,436 | ± 3843,144 | ops/s 
-`Instantiation.measureWithout` | `Throughput` | 5 | 36249,932 | ± 711,607 | ops/s
+------ | ------ |------| ------ | ------ | ------
+`Instantiation.measureWith` | `AverageTime` | 10 | 3,714 | ± 0,246 | s/op 
+`Instantiation.measureWithout` | `AverageTime` | 10 | 0,091 | ± 0,004 | s/op
  
-**Total time:** `T`
+**Total time:** 3m 49s
 
 
 
@@ -75,8 +75,8 @@ Procedural style using standard Java syntax:
 
 ```Java
 public void measureProcedural(Blackhole bh) {
-    final Foo[] foos = new Foo[10000];
-    for (int i = 0; i < 10000; i++) {
+    final Foo[] foos = new Foo[100000000];
+    for (int i = 0; i < 100000000; i++) {
         foos[i] = new Foo();
     }
     int sum = 0;
@@ -92,7 +92,7 @@ Relatively functional style using Java Stream API:
 ```Java
 public void measureFunctional(Blackhole bh) {
     int sum = Stream.generate(Foo::new)
-            .limit(10000)
+            .limit(100000000)
             .map(Foo::bar)
             .mapToInt(Integer::intValue)
             .sum();
@@ -106,13 +106,13 @@ Object-Oriented Declarative style using Cactoos:
 public void measureDeclarative(Blackhole bh) {
     int sum = new SumOf(
             new Mapped<Integer>(
-                    foo -> foo.bar(),
-                    new Repeated<Foo>(
-                            10000,
-                            new Foo()
-                    )
+                foo -> foo.bar(),
+                new Repeated<Foo>(
+                    100000000,
+                    new Foo()
+                )
             )
-    ).intValue();
+        ).intValue();
     bh.consume(sum);
 }
 ```
@@ -120,10 +120,10 @@ public void measureDeclarative(Blackhole bh) {
 ### Results
 
 Benchmark | Mode | Iterations | Score | Error | Units
------- | ------ | ------ | ------ | ------ | ------
-`Collections.measureProcedural` | `Throughput` | 25 | 30488,728 | ± 1379,901 | ops/s
-`Collections.measureFunctional` | `Throughput` | 25 | 18794,544 | ± 466,739 | ops/s
-`Collections.measureDeclarative` | `Throughput` | 25 | 2412,086 | ± 180,319 | ops/s
+------ | ------ |------| ------ | ------ | ------
+`Collections.measureProcedural` | `AverageTime` | 10 | 7,631 | ± 0,524 | s/op
+`Collections.measureFunctional` | `AverageTime` | 10 | 4,560 | ± 0,595 | s/op
+`Collections.measureDeclarative` | `AverageTime` | 10 | 9,070 | ± 5,783 | s/op
 
 **Total time:** `T`
 
@@ -137,13 +137,13 @@ Benchmark | Mode | Iterations | Score | Error | Units
 
 ### Implementations
 
-Late binding polymorphism using Dynamic Dispatch (there is probably a JIP optimization here):
+Late binding polymorphism using Dynamic Dispatch:
 
 ```Java
 public void measureWith(Blackhole bh) {
     Cart c = new Cart(new Book("1984"));
     c.p = new Movie("Godfather");
-    for (long i = 0; i < 10000000L; i++) {
+    for (long i = 0; i < 10000000000L; i++) {
         bh.consume(c.total());
     }
 }
@@ -155,7 +155,7 @@ Reducing polymorphism before compilation using object specialization:
 public void measureWithout(Blackhole bh) {
     Cart1 c1 = new Cart1(new Book("1984"));
     Cart2 c2 = c1.with(new Movie("Godfather"));
-    for (long i = 0; i < 10000000L; i++) {
+    for (long i = 0; i < 10000000000L; i++) {
         bh.consume(c2.total());
     }
 }
@@ -165,28 +165,7 @@ public void measureWithout(Blackhole bh) {
 
 Benchmark | Mode | Iterations | Score | Error | Units
 ------ | ------ | ------ | ------ | ------ | ------
-`Polymorphism.measureWith` | `Throughput` | 25 | 10,291 | ± 0,053 | ops/s
-`Polymorphism.measureWithout` | `Throughput` | 25 | 10,471 | ± 0,057 | ops/s
+`Polymorphism.measureWith` | `AverageTime` | 10 | 10,291 | ± 0,053 | s/op
+`Polymorphism.measureWithout` | `AverageTime` | 10 | 10,471 | ± 0,057 | s/op
 
-**Total time:** 16m 54s
-
-### Discussion
-
-One fork with 5 measurable iterations outputs the following results:
-
-```bash
-# Run progress: 20,00% complete, ETA 00:15:10
-# Fork: 3 of 5
-# Warmup Iteration   1: 0,075 ops/s
-# Warmup Iteration   2: 0,075 ops/s
-# Warmup Iteration   3: 2,579 ops/s
-# Warmup Iteration   4: 2,506 ops/s
-# Warmup Iteration   5: 2,579 ops/s
-Iteration   1: 2,502 ops/s
-Iteration   2: 2,556 ops/s
-Iteration   3: 2,561 ops/s
-Iteration   4: 2,479 ops/s
-Iteration   5: 2,329 ops/s
-```
-
-The first two iterations are noticeably slower than the next ones. Therefore, we can assume that JIT optimization works
+**Total time:** 5m 5s

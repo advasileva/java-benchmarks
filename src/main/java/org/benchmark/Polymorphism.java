@@ -9,7 +9,7 @@ public class Polymorphism extends Template {
     public void measureWith(Blackhole bh) {
         Cart c = new Cart(new Book("1984"));
         c.p = new Movie("Godfather");
-        for (long i = 0; i < 10000000L; i++) {
+        for (long i = 0; i < 10000000000L; i++) {
             bh.consume(c.total());
         }
     }
@@ -18,7 +18,7 @@ public class Polymorphism extends Template {
     public void measureWithout(Blackhole bh) {
         Cart1 c1 = new Cart1(new Book("1984"));
         Cart2 c2 = c1.with(new Movie("Godfather"));
-        for (long i = 0; i < 10000000L; i++) {
+        for (long i = 0; i < 10000000000L; i++) {
             bh.consume(c2.total());
         }
     }
